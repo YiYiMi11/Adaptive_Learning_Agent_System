@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+{% block title %}学习 — {{ student.name }} — Adaptive Learning{% endblock %}
+
+{% block content %}
+<input type="hidden" id="studentId" value="{{ student.id }}">
+
+<!-- 顶部信息栏 -->
+<div class="page-header page-enter">
+    <div>
+        <a href="/student/{{ student.id }}" class="breadcrumb"><i class="fa-solid fa-arrow-left"></i> 返回仪表盘</a>
+        <h1>{{ student.name }} 的学习</h1>
+    </div>
+    <div class="page-actions">
+        <span id="quickStats" class="badge badge-neutral" style="font-size: 13px; padding: 6px 14px;">加载中...</span>
+        <span class="badge badge-blue" style="font-size: 13px; padding: 6px 14px;">
+            <i class="fa-solid fa-bookmark"></i> {{ knowledge_name }}
+        </span>
+    </div>
+</div>
+
+<!-- 答题进度条 -->
+<div class="quiz-progress-bar page-enter page-enter-delay-1" id="quizProgressBar">
+    <div class="quiz-progress-stats">
+        <div class="quiz-progress-stat">
+            <i class="fa-solid fa-clipboard-check"></i>
+            <span class="quiz-progress-label">已答题</span>
+            <span class="quiz-progress-value" id="progressAnswered">--</span>
+        </div>
+        <div class="quiz-progress-stat">
+            <i class="fa-solid fa-bullseye"></i>
+            <span class="quiz-progress-label">正确率</span>
+            <span class="quiz-progress-value" id="progressAccuracy">--</span>
+        </div>
+        <div class="quiz-progress-stat">
+            <i class="fa-solid fa-brain"></i>
+            <span class="quiz-progress-label">掌握度</span>
+            <span class="quiz-progress-value" id="progressMastery">--</span>
+        </div>
+        <div class="quiz-progress-stat">
+            <i class="fa-solid fa-book-open"></i>
+            <span class="quiz-progress-label">知识点</span>
+            <span class="quiz-progress-value" id="progressKnowledge">--</span>
+        </div>
+    </div>
+    <div class="quiz-progress-track">
+        <div class="quiz-progress-fill" id="progressFill" style="width: 0%"></div>
+    </div>
+    <div class="quiz-progress-detail" id="progressDetail">加载中...</div>
+</div>
+
+<!-- 题目卡片 -->
+<div class="question-card page-enter page-enter-delay-2">
+    <div class="question-header">
+        <span class="badge badge-neutral">题目</span>
+        <span class="question-knowledge">
+            <i class="fa-solid fa-tag"></i> {{ knowledge_name }}
+        </span>
+        <span class="question-timer" id="questionTimer">⏱ 00:00</span>
+        {% if knowledge_id %}
+        <button class="btn btn-ghost btn-sm" onclick="explainConcept('{{ knowledge_id }}')" style="margin-left: auto;">
+            <i class="fa-solid fa-lightbulb"></i> 讲解知识点<sup class="ai-badge">*</sup>
+        </button>
+        {% endif %}
+    </div>
+
+    <div class="question-text">{{ question.question }}</div>
+
+    <div class="options-list">
+        {% set labels = ['A', 'B', 'C', 'D'] %}
+        {% for option in question.options %}
+        <button class="option-btn" data-answer="{{ option }}" onclick="selectOption(this, '{{ option }}')">
+            <span class="option-label">{{ labels[loop.index - 1] }}</span>
+            <span>{{ option }}</span>
+        </button>
+        {% endfor %}
+    </div>
+
+    <div class="question-actions">
+        <button class="btn btn-primary btn-lg" id="submitBtn" disabled onclick="submitAnswer()">
+            <i class="fa-solid fa-paper-plane"></i> 提交答案
+        </button>
+        <button class="btn btn-ghost btn-lg" onclick="nextQuestion()">
+            下一题 <i class="fa-solid fa-arrow-right"></i>
+        </button>
+    </div>
+
+    <!-- 解析区域 -->
+    <div class="explanation-box" id="explanation" style="display: none;"></div>
+</div>
+
+<!-- 知识点讲解区域 -->
+<div class="concept-box" id="conceptBox" style="display: none;">
+    <div class="concept-header">
+        <span class="concept-title" id="conceptTitle"></span>
+        <button class="btn btn-ghost btn-sm" onclick="closeConcept()" title="关闭">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+    </div>
+    <div class="concept-body" id="conceptBody"></div>
+</div>
+
+<!-- AI辅导区域 -->
+<div id="tutorSection" style="display: none;">
+    <div class="chat-container">
+        <div class="card" style="padding: 0; overflow: hidden;">
+            <div class="chat-header">
+                <div class="chat-header-left">
+                    <div class="chat-header-avatar"><i class="fa-solid fa-robot"></i></div>
+                    <div>
+                        <div class="chat-header-title">AI 辅导老师</div>
+                        <div class="chat-header-sub">Socratic 启发式教学</div>
+                    </div>
+                </div>
+            </div>
+            <div class="chat-messages" id="tutorMessages"></div>
+            <div class="chat-input-area">
+                <input type="text" id="tutorInput" placeholder="输入你的问题或想法..." autocomplete="off">
+                <button class="btn btn-primary btn-sm" onclick="sendTutorMessage()" title="发送消息（AI生成回复）">
+                    <i class="fa-solid fa-paper-plane"></i> <span class="ai-badge">AI</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- AI辅导按钮 -->
+<div class="tutor-trigger">
+    <button class="btn btn-success btn-lg" id="tutorBtn" disabled onclick="startTutoring()">
+        <i class="fa-solid fa-robot"></i> 获取AI辅导 <span class="ai-badge">AI</span>
+    </button>
+</div>
+
+<!-- 路径生成加载覆盖层 -->
+<div class="path-loading-overlay" id="pathLoadingOverlay" style="display: none;">
+    <div class="path-loading-content">
+        <div class="spinner" style="width: 24px; height: 24px; border-width: 3px;"></div>
+        <p>正在分析你的学习情况，生成个性化路径...</p>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    currentQuestion = {{ question | tojson }};
+    updateQuickStats({{ student.id }});
+    updateProgressBar({{ student.id }});
+    startTimer();
+
+    // 自动检测并生成学习路径
+    (async function() {
+        try {
+            const res = await fetch('/api/plan/auto/{{ student.id }}', { method: 'POST' });
+            const data = await res.json();
+            if (data.status === 'generated') {
+                showToast('已为你生成个性化学习路径 🎯', 'success');
+            }
+        } catch (e) {
+            // 网络错误静默处理，不影响答题
+        }
+    })();
+</script>
+{% endblock %}

@@ -1,0 +1,201 @@
+{% extends "base.html" %}
+{% block title %}学习报告 — {{ student.name }} — Adaptive Learning{% endblock %}
+
+{% block content %}
+<div class="page-header page-enter">
+    <div>
+        <a href="/student/{{ student.id }}" class="breadcrumb"><i class="fa-solid fa-arrow-left"></i> 返回 {{ student.name }} 的仪表盘</a>
+        <h1>学习报告</h1>
+    </div>
+</div>
+
+<!-- 综合评价 -->
+<div class="report-summary page-enter page-enter-delay-1">
+    <div class="report-level">{{ report.level }}</div>
+    <div class="report-message">{{ report.message }}</div>
+    <div class="report-time">报告生成时间：{{ report.generated_at }}</div>
+</div>
+
+<!-- Tab切换 -->
+<div class="tabs page-enter page-enter-delay-2">
+    <div class="tab active" onclick="switchTab('overview')"><i class="fa-solid fa-chart-simple"></i> 总览</div>
+    <div class="tab" onclick="switchTab('diagnosis')"><i class="fa-solid fa-stethoscope"></i> 诊断详情</div>
+    <div class="tab" onclick="switchTab('review')"><i class="fa-solid fa-rotate"></i> 复习计划</div>
+</div>
+
+<!-- 总览Tab -->
+<div class="tab-content active" id="tab-overview">
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fa-solid fa-pen-to-square"></i></div>
+            <div class="stat-value">{{ report.progress.total_questions }}</div>
+            <div class="stat-label">总答题数</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fa-solid fa-circle-check"></i></div>
+            <div class="stat-value">{{ "%.1f"|format(report.progress.accuracy * 100) }}%</div>
+            <div class="stat-label">正确率</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fa-solid fa-bullseye"></i></div>
+            <div class="stat-value">{{ report.progress.mastered_nodes }}/{{ report.progress.total_nodes }}</div>
+            <div class="stat-label">已掌握知识点</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fa-solid fa-fire"></i></div>
+            <div class="stat-value">{{ report.streak.streak }}</div>
+            <div class="stat-label">连续学习天数</div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-title"><i class="fa-solid fa-chart-pie"></i> 分类掌握情况</div>
+        <div class="progress-list">
+            {% for cat_id, cat_data in report.progress.category_stats.items() %}
+            <div class="progress-item">
+                <div class="progress-info">
+                    <span class="progress-name">{{ cat_data.name }}</span>
+                    <span class="progress-detail">{{ cat_data.mastered }}/{{ cat_data.total }} 掌握</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill {% if cat_data.mastery_rate >= 0.7 %}green{% elif cat_data.mastery_rate >= 0.4 %}yellow{% else %}red{% endif %}"
+                         style="width: {{ cat_data.mastery_rate * 100 }}%"></div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- 诊断详情Tab -->
+<div class="tab-content" id="tab-diagnosis">
+    {% if diagnosis.weak_nodes %}
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title"><i class="fa-solid fa-triangle-exclamation"></i> 薄弱知识点 (Top {{ diagnosis.weak_nodes|length }})</div>
+        </div>
+        <div class="data-table-wrapper">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>知识点</th>
+                        <th>类别</th>
+                        <th>级别</th>
+                        <th>掌握度</th>
+                        <th>作答</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for node in diagnosis.weak_nodes %}
+                    <tr>
+                        <td class="td-bold">{{ node.name }}</td>
+                        <td>
+                            {% if node.category == 'grammar' %}语法
+                            {% elif node.category == 'vocabulary' %}词汇
+                            {% elif node.category == 'reading' %}阅读
+                            {% endif %}
+                        </td>
+                        <td>L{{ node.level }}</td>
+                        <td>
+                            <div class="td-progress">
+                                <div class="progress-bar" style="width: 80px;">
+                                    <div class="progress-fill {% if node.mastery_prob >= 0.6 %}yellow{% else %}red{% endif %}"
+                                         style="width: {{ node.mastery_prob * 100 }}%"></div>
+                                </div>
+                                <span>{{ "%.0f"|format(node.mastery_prob * 100) }}%</span>
+                            </div>
+                        </td>
+                        <td class="td-muted">{{ node.correct }}/{{ node.attempts }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if diagnosis.recommendations %}
+    <div class="card">
+        <div class="card-title"><i class="fa-solid fa-lightbulb"></i> 改进建议</div>
+        <div class="suggestion-list">
+            {% for rec in diagnosis.recommendations %}
+            <div class="suggestion-item">
+                <div class="suggestion-header">
+                    <span class="badge {% if rec.priority == 'high' %}badge-red{% else %}badge-yellow{% endif %}">
+                        {{ '高优先' if rec.priority == 'high' else '中优先' }}
+                    </span>
+                    <span class="suggestion-message">{{ rec.message }}</span>
+                </div>
+                <div class="suggestion-desc">{{ rec.suggestion }}</div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    {% if not diagnosis.weak_nodes %}
+    <div class="empty-state">
+        <div class="empty-icon"><i class="fa-solid fa-circle-check"></i></div>
+        <div class="empty-title">暂无薄弱知识点</div>
+        <div class="empty-desc">继续学习，系统会持续跟踪你的掌握情况</div>
+    </div>
+    {% endif %}
+</div>
+
+<!-- 复习计划Tab -->
+<div class="tab-content" id="tab-review">
+    {% if review_schedule %}
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title"><i class="fa-solid fa-rotate"></i> 间隔重复复习计划</div>
+            <span class="badge badge-yellow">{{ report.overdue_reviews }} 项待复习</span>
+        </div>
+        <div class="data-table-wrapper">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>知识点</th>
+                        <th>类别</th>
+                        <th>掌握度</th>
+                        <th>紧急度</th>
+                        <th>下次复习</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in review_schedule %}
+                    <tr class="{% if item.is_overdue %}row-overdue{% endif %}">
+                        <td class="td-bold">
+                            {{ item.knowledge_name }}
+                            {% if item.is_overdue %}<i class="fa-solid fa-circle-exclamation" style="color: var(--danger); margin-left: 4px;"></i>{% endif %}
+                        </td>
+                        <td>
+                            {% if item.category == 'grammar' %}语法
+                            {% elif item.category == 'vocabulary' %}词汇
+                            {% elif item.category == 'reading' %}阅读
+                            {% endif %}
+                        </td>
+                        <td>{{ "%.0f"|format(item.mastery_prob * 100) }}%</td>
+                        <td>
+                            <span class="badge {% if item.urgency == 'critical' %}badge-red{% elif item.urgency == 'high' %}badge-yellow{% elif item.urgency == 'medium' %}badge-blue{% else %}badge-green{% endif %}">
+                                {% if item.urgency == 'critical' %}紧急
+                                {% elif item.urgency == 'high' %}较高
+                                {% elif item.urgency == 'medium' %}一般
+                                {% else %}较低{% endif %}
+                            </span>
+                        </td>
+                        <td class="td-muted">{{ item.next_review }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-icon"><i class="fa-solid fa-clipboard-list"></i></div>
+        <div class="empty-title">暂无复习计划</div>
+        <div class="empty-desc">开始做题后，系统会自动生成复习计划</div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

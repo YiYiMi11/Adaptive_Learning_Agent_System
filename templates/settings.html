@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+{% block title %}系统设置 — Adaptive Learning{% endblock %}
+
+{% block content %}
+<div class="page-header page-enter">
+    <div>
+        <a href="/app" class="breadcrumb"><i class="fa-solid fa-arrow-left"></i> 返回首页</a>
+        <h1>系统设置</h1>
+    </div>
+</div>
+
+<!-- API配置 -->
+<div class="card page-enter page-enter-delay-1">
+    <div class="card-title"><i class="fa-solid fa-key"></i> API 配置</div>
+
+    <div class="settings-section">
+        <h3>连接设置</h3>
+
+        <div class="form-group">
+            <label class="form-label">API 地址</label>
+            <input type="text" class="form-input" id="apiBase" value="{{ api_base }}"
+                   placeholder="https://api.openai.com/v1">
+            <div class="form-hint">
+                支持 OpenAI 兼容接口。常见地址：<br>
+                OpenAI: https://api.openai.com/v1 &nbsp;|&nbsp;
+                DeepSeek: https://api.deepseek.com/v1 &nbsp;|&nbsp;
+                智谱: https://open.bigmodel.cn/api/paas/v4
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">API Key</label>
+            <div class="api-key-input-group">
+                <input type="password" class="form-input" id="apiKey" value="{{ api_key }}"
+                       placeholder="sk-xxxxxxxxxxxxxxxxxxxxxxxx">
+                <button class="btn btn-ghost btn-sm" onclick="toggleKeyVisibility()">
+                    <i class="fa-solid fa-eye" id="eyeIcon"></i>
+                </button>
+            </div>
+            <div class="form-hint">API Key 仅保存在本地数据库中，不会上传到任何第三方服务器。</div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">模型名称</label>
+            <input type="text" class="form-input" id="model" value="{{ model }}"
+                   placeholder="gpt-4o-mini">
+            <div class="form-hint">
+                常用模型：gpt-4o-mini（推荐）| gpt-4o | deepseek-chat | glm-4-flash
+            </div>
+        </div>
+
+        <div id="apiStatus" class="api-status {% if has_api_key %}connected{% else %}disconnected{% endif %}">
+            <i class="fa-solid {% if has_api_key %}fa-circle-check{% else %}fa-circle-xmark{% endif %}"></i>
+            {% if has_api_key %}API已配置{% else %}API未配置{% endif %}
+        </div>
+
+        <div class="settings-actions">
+            <button class="btn btn-primary" id="saveBtn" onclick="saveSettings()">
+                <i class="fa-solid fa-floppy-disk"></i> 保存设置
+            </button>
+            <button class="btn btn-ghost" id="testBtn" onclick="testConnection()">
+                <i class="fa-solid fa-plug"></i> 测试连接
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- 使用说明 -->
+<div class="card page-enter page-enter-delay-2">
+    <div class="card-title"><i class="fa-solid fa-book"></i> 使用说明</div>
+    <div class="steps-list">
+        <div class="step-item">
+            <div class="step-num">1</div>
+            <div class="step-content">
+                <div class="step-title">配置API</div>
+                <div class="step-desc">填入API Key和对应的API地址，点击"测试连接"确认可用</div>
+            </div>
+        </div>
+        <div class="step-item">
+            <div class="step-num">2</div>
+            <div class="step-content">
+                <div class="step-title">创建学生</div>
+                <div class="step-desc">返回首页，点击"新建学生"创建学习账号</div>
+            </div>
+        </div>
+        <div class="step-item">
+            <div class="step-num">3</div>
+            <div class="step-content">
+                <div class="step-title">开始学习</div>
+                <div class="step-desc">进入学生主页，点击"开始学习"做题</div>
+            </div>
+        </div>
+        <div class="step-item">
+            <div class="step-num">4</div>
+            <div class="step-content">
+                <div class="step-title">AI辅导</div>
+                <div class="step-desc">答题后可点击"获取AI辅导"，AI老师会引导你理解知识点</div>
+            </div>
+        </div>
+        <div class="step-item">
+            <div class="step-num">5</div>
+            <div class="step-content">
+                <div class="step-title">查看报告</div>
+                <div class="step-desc">系统自动分析薄弱环节，生成个性化学习路径和复习计划</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 系统信息 -->
+<div class="card page-enter page-enter-delay-3">
+    <div class="card-title"><i class="fa-solid fa-circle-info"></i> 系统信息</div>
+    <div class="info-list">
+        <div class="info-row"><span class="info-label">系统名称</span><span>自适应学习Agent系统</span></div>
+        <div class="info-row"><span class="info-label">Agent架构</span><span>诊断 + 规划 + 辅导 + 评估</span></div>
+        <div class="info-row"><span class="info-label">学科领域</span><span>英语学习（语法、词汇、阅读）</span></div>
+        <div class="info-row"><span class="info-label">核心算法</span><span>贝叶斯知识追踪 (BKT) + 间隔重复 (SM-2)</span></div>
+        <div class="info-row"><span class="info-label">知识图谱</span><span>34 个节点 / 40+ 条依赖关系</span></div>
+        <div class="info-row"><span class="info-label">题库规模</span><span>56 道精选练习题</span></div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function toggleKeyVisibility() {
+        const input = document.getElementById('apiKey');
+        const icon = document.getElementById('eyeIcon');
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.className = 'fa-solid fa-eye-slash';
+        } else {
+            input.type = 'password';
+            icon.className = 'fa-solid fa-eye';
+        }
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adaptive Learning — 多Agent协作自适应学习系统</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body class="landing-page">
+
+    <!-- Navigation -->
+    <nav class="landing-nav" id="landingNav">
+        <a href="/" class="landing-nav-brand">
+            <i class="fa-solid fa-graduation-cap"></i>
+            <span>Adaptive Learning</span>
+        </a>
+        <div class="landing-nav-actions">
+            <a href="/agents" class="btn btn-ghost">Agent 介绍</a>
+            <a href="/app" class="btn btn-primary">开始使用</a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="landing-hero">
+        <div class="hero-eyebrow page-enter">
+            <i class="fa-solid fa-sparkles"></i>
+            多Agent协作 · AI驱动
+        </div>
+        <h1 class="hero-title page-enter page-enter-delay-1">
+            让每一位学生<br>拥有<span class="gradient-text">专属AI导师</span>
+        </h1>
+        <p class="hero-subtitle page-enter page-enter-delay-2">
+            基于贝叶斯知识追踪与多Agent协作架构，为每位学生精准诊断薄弱环节，智能规划学习路径，提供苏格拉底式启发辅导。
+        </p>
+        <div class="hero-actions page-enter page-enter-delay-3">
+            <a href="/app" class="btn btn-primary">
+                <i class="fa-solid fa-rocket"></i> 免费开始
+            </a>
+            <a href="#features" class="btn btn-ghost">
+                <i class="fa-solid fa-play"></i> 了解更多
+            </a>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="landing-section" id="features">
+        <div class="section-label page-enter">核心能力</div>
+        <h2 class="section-title page-enter page-enter-delay-1">
+            四大智能Agent<br>全方位赋能学习
+        </h2>
+        <p class="section-desc page-enter page-enter-delay-2">
+            诊断、规划、辅导、评估四大模块深度协作，构建完整的学习闭环。
+        </p>
+
+        <div class="features-grid">
+            <div class="feature-card page-enter page-enter-delay-1">
+                <div class="feature-icon blue">
+                    <i class="fa-solid fa-stethoscope"></i>
+                </div>
+                <h3>诊断 Agent</h3>
+                <p>基于贝叶斯知识追踪（BKT）算法，实时分析每位学生的知识掌握状态，精准定位薄弱环节。</p>
+                <a href="/agents#diagnostic" class="feature-link">了解更多 <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+
+            <div class="feature-card page-enter page-enter-delay-2">
+                <div class="feature-icon purple">
+                    <i class="fa-solid fa-route"></i>
+                </div>
+                <h3>规划 Agent</h3>
+                <p>结合知识图谱依赖关系与学生个体差异，AI智能生成最优个性化学习路径，确保循序渐进。</p>
+                <a href="/agents#planning" class="feature-link">了解更多 <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+
+            <div class="feature-card page-enter page-enter-delay-3">
+                <div class="feature-icon green">
+                    <i class="fa-solid fa-comments"></i>
+                </div>
+                <h3>辅导 Agent</h3>
+                <p>采用苏格拉底式启发教学法，通过多轮对话引导学生主动思考，而非直接给出答案。</p>
+                <a href="/agents#tutoring" class="feature-link">了解更多 <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+
+            <div class="feature-card page-enter page-enter-delay-4">
+                <div class="feature-icon orange">
+                    <i class="fa-solid fa-chart-line"></i>
+                </div>
+                <h3>评估 Agent</h3>
+                <p>综合分析答题数据，生成多维度学习报告，结合SM-2间隔重复算法科学安排复习计划。</p>
+                <a href="/agents#assessment" class="feature-link">了解更多 <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="landing-cta">
+        <h2 class="cta-title page-enter">准备好开始了吗？</h2>
+        <p class="cta-desc page-enter page-enter-delay-1">
+            只需配置API Key，即可为你的学生开启AI驱动的个性化学习之旅。
+        </p>
+        <div class="hero-actions page-enter page-enter-delay-2">
+            <a href="/app" class="btn btn-primary btn-lg">
+                <i class="fa-solid fa-arrow-right"></i> 立即体验
+            </a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="landing-footer">
+        <p>Adaptive Learning Agent System &mdash; 多Agent协作自适应学习系统</p>
+    </footer>
+
+    <script>
+        // Navbar scroll effect
+        const nav = document.getElementById('landingNav');
+        window.addEventListener('scroll', () => {
+            nav.classList.toggle('scrolled', window.scrollY > 20);
+        });
+
+        // Intersection Observer for scroll animations
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.animationPlayState = 'running';
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.page-enter').forEach(el => {
+            el.style.animationPlayState = 'paused';
+            // Don't pause hero elements
+            if (el.closest('.landing-hero')) {
+                el.style.animationPlayState = 'running';
+            } else {
+                observer.observe(el);
+            }
+        });
+    </script>
+</body>
+</html>

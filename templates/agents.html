@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent 介绍 — Adaptive Learning</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/agents.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body class="landing-page">
+
+    <!-- Navigation -->
+    <nav class="landing-nav" id="agentsNav">
+        <a href="/" class="landing-nav-brand">
+            <i class="fa-solid fa-graduation-cap"></i>
+            <span>Adaptive Learning</span>
+        </a>
+        <div class="landing-nav-actions">
+            <a href="/" class="btn btn-ghost">首页</a>
+            <a href="/app" class="btn btn-primary">开始使用</a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="agents-hero">
+        <div class="hero-eyebrow page-enter">
+            <i class="fa-solid fa-diagram-project"></i>
+            多Agent协作架构
+        </div>
+        <h1 class="hero-title page-enter page-enter-delay-1">
+            四大智能Agent<br><span class="gradient-text">协同驱动学习</span>
+        </h1>
+        <p class="hero-subtitle page-enter page-enter-delay-2">
+            诊断、规划、辅导、评估 -- 四个Agent各司其职又深度协作，为每位学生构建完整的自适应学习闭环。
+        </p>
+
+        <!-- Agent Collaboration Graph -->
+        <div class="collab-graph page-enter page-enter-delay-3" id="collabGraph">
+            <div class="collab-graph-inner">
+                <!-- Center label -->
+                <div class="collab-center">
+                    <i class="fa-solid fa-arrows-spin"></i>
+                    <span>协作引擎</span>
+                </div>
+                <!-- Agent nodes -->
+                <div class="collab-node" data-agent="diagnostic" id="nodeDiagnostic">
+                    <div class="collab-node-icon blue">
+                        <i class="fa-solid fa-stethoscope"></i>
+                    </div>
+                    <div class="collab-node-label">诊断 Agent</div>
+                    <div class="collab-node-desc">精准定位薄弱环节</div>
+                </div>
+                <div class="collab-node" data-agent="planning" id="nodePlanning">
+                    <div class="collab-node-icon purple">
+                        <i class="fa-solid fa-route"></i>
+                    </div>
+                    <div class="collab-node-label">规划 Agent</div>
+                    <div class="collab-node-desc">生成个性化路径</div>
+                </div>
+                <div class="collab-node" data-agent="tutoring" id="nodeTutoring">
+                    <div class="collab-node-icon green">
+                        <i class="fa-solid fa-chalkboard-user"></i>
+                    </div>
+                    <div class="collab-node-label">辅导 Agent</div>
+                    <div class="collab-node-desc">启发式教学对话</div>
+                </div>
+                <div class="collab-node" data-agent="assessment" id="nodeAssessment">
+                    <div class="collab-node-icon orange">
+                        <i class="fa-solid fa-chart-line"></i>
+                    </div>
+                    <div class="collab-node-label">评估 Agent</div>
+                    <div class="collab-node-desc">追踪进度与复习</div>
+                </div>
+                <!-- SVG connections -->
+                <svg class="collab-lines" viewBox="0 0 400 400" preserveAspectRatio="xMidYMid meet">
+                    <defs>
+                        <linearGradient id="lineGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#0A84FF;stop-opacity:0.4"/>
+                            <stop offset="100%" style="stop-color:#5856D6;stop-opacity:0.4"/>
+                        </linearGradient>
+                    </defs>
+                    <!-- Diagnostic -> Planning -->
+                    <line class="collab-line" data-from="diagnostic" data-to="planning" x1="200" y1="80" x2="320" y2="200"/>
+                    <!-- Planning -> Tutoring -->
+                    <line class="collab-line" data-from="planning" data-to="tutoring" x1="320" y1="200" x2="200" y2="320"/>
+                    <!-- Tutoring -> Assessment -->
+                    <line class="collab-line" data-from="tutoring" data-to="assessment" x1="200" y1="320" x2="80" y2="200"/>
+                    <!-- Assessment -> Diagnostic -->
+                    <line class="collab-line" data-from="assessment" data-to="diagnostic" x1="80" y1="200" x2="200" y2="80"/>
+                    <!-- Cross connections -->
+                    <line class="collab-line collab-line-cross" data-from="diagnostic" data-to="tutoring" x1="200" y1="80" x2="200" y2="320"/>
+                    <line class="collab-line collab-line-cross" data-from="planning" data-to="assessment" x1="320" y1="200" x2="80" y2="200"/>
+                    <!-- Flow particles -->
+                    <circle class="flow-particle" r="3" fill="#0A84FF">
+                        <animateMotion dur="3s" repeatCount="indefinite" path="M200,80 L320,200"/>
+                    </circle>
+                    <circle class="flow-particle" r="3" fill="#5856D6">
+                        <animateMotion dur="3s" repeatCount="indefinite" path="M320,200 L200,320"/>
+                    </circle>
+                    <circle class="flow-particle" r="3" fill="#30D158">
+                        <animateMotion dur="3s" repeatCount="indefinite" path="M200,320 L80,200"/>
+                    </circle>
+                    <circle class="flow-particle" r="3" fill="#FF9F0A">
+                        <animateMotion dur="3s" repeatCount="indefinite" path="M80,200 L200,80"/>
+                    </circle>
+                </svg>
+            </div>
+            <!-- Data flow labels -->
+            <div class="collab-flow-labels page-enter page-enter-delay-4">
+                <div class="flow-label">
+                    <span class="flow-dot blue"></span>
+                    答题数据
+                </div>
+                <div class="flow-label">
+                    <span class="flow-dot purple"></span>
+                    学习路径
+                </div>
+                <div class="flow-label">
+                    <span class="flow-dot green"></span>
+                    辅导反馈
+                </div>
+                <div class="flow-label">
+                    <span class="flow-dot orange"></span>
+                    进度报告
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== Diagnostic Agent ==================== -->
+    <section class="agent-section" id="diagnostic">
+        <div class="agent-section-inner">
+            <div class="agent-section-left page-enter">
+                <div class="agent-section-badge blue">
+                    <i class="fa-solid fa-stethoscope"></i>
+                </div>
+                <h2 class="agent-section-title">诊断 Agent</h2>
+                <p class="agent-section-subtitle">精准分析，洞察每位学生的知识掌握状态</p>
+                <div class="agent-features">
+                    <div class="agent-feature-item">
+                        <div class="agent-feature-icon"><i class="fa-solid fa-brain"></i></div>
+                        <div>
+                            <div class="agent-feature-name">BKT 贝叶斯知识追踪</div>
+                            <div class="agent-feature-desc">基于贝叶斯定理实时更新每个知识点的掌握概率，参数经过精心调优（学习率0.1、猜测率0.25、失误率0.1）</div>
+                        </div>
+                    </div>
+                    <div class="agent-feature-item">
+                        <div class="agent-feature-icon"><i class="fa-solid fa-link"></i></div>
+                        <div>
+                            <div class="agent-feature-name">长链推理错误分析</div>
+                            <div class="agent-feature-desc">4步推理链：观察现象 -> 分析模式 -> 追溯前置知识 -> 定位根因，不仅告诉你"哪里错了"，更告诉你"为什么错"</div>
+                        </div>
+                    </div>
+                    <div class="agent-feature-item">
+                        <div class="agent-feature-icon"><i class="fa-solid fa-layer-group"></i></div>
+                        <div>
+                            <div class="agent-feature-name">三级掌握分类</div>
+                            <div class="agent-feature-desc">薄弱节点（掌握度 &lt; 60%）、中间节点、强项节点（掌握度 >= 80%），精准定位需要优先攻克的知识点</div>
+                        </div>
+                    </div>
+                    <div class="agent-feature-item">
+                        <div class="agent-feature-icon"><i class="fa-solid fa-bolt"></i></div>
+                        <div>
+                            <div class="agent-feature-name">即时快速诊断</div>
+                            <div class="agent-feature-desc">每答完一题立即触发BKT更新，实时刷新掌握概率，无需等待完整诊断周期</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="agent-section-right page-enter page-enter-delay-1">
+                <!-- Interactive Flow Demo -->
+                <div class="flow-demo">
+                    <div class="flow-demo-title">
+                        <i class="fa-solid fa-play-circle"></i>
+                        诊断流程演示
+                    </div>
+                    <div class="flow-steps" id="diagnosticSteps">
+                        <div class="flow-step active" data-step="1">
+                            <div class="flow-step-header" onclick="toggleStep('diagnosticSteps', 1)">
+                                <div class="flow-step-num">1</div>
+                                <div class="flow-step-text">收集答题数据</div>
+                                <i class="fa-solid fa-chevron-down flow-step-arrow"></i>
+                            </div>
+                            <div class="flow-step-body">
+                                从数据库获取学生所有答题记录，包括题目ID、答案正确性、作答时间等完整信息，构建学生画像。
+                            </div>
+                        </div>
+                        <div class="flow-step" data-step="2">
+                            <div class="flow-step-header" onclick="toggleStep('diagnosticSteps', 2)">
+                                <div class="flow-step-num">2</div>
+                                <div class="flow-step-text">BKT 概率计算</div>
+                                <i class="fa-solid fa-chevron-down flow-step-arrow"></i>
+                            </div>
+                            <div class="flow-step-body">
+                                对每个知识点运行贝叶斯知识追踪算法，根据答题结果更新掌握概率 P(mastery)。答对提高概率，答错降低概率，更新幅度由参数控制。
+                            </div>
+                        </div>
+                        <div class="flow-step" data-step="3">
+                            <div class="flow-step-header" onclick="toggleStep('diagnosticSteps', 3)">
+                                <div class="flow-step-num">3</div>
+                                <div class="flow-step-text">长链推理分析</div>
+                                <i class="fa-solid fa-chevron-down flow-step-arrow"></i>
+                            </div>
+                            <div class="flow-step-body">
+                                对薄弱知识点启动4步推理链：观察错误模式 -> 分析进步/退步趋势 -> 追溯前置知识掌握情况 -> 定位根本原因（概念偏差/应用不足/未开始学习）。
+                            </div>
+                        </div>
+                        <div class="flow-step" data-step="4">
+                            <div class="flow-step-header" onclick="toggleStep('diagnosticSteps', 4)">
+                                <div class="flow-step-num">4</div>
+                                <div class="flow-step-text">生成诊断报告</div>
+                                <i class="fa-solid fa-chevron-down flow-step-arrow"></i>
+                            </div>
+                            <div class="flow-step-body">
+                                汇总所有分析结果，按优先级排序薄弱知识点（做过但错的优先 > 低级别优先 > 掌握度低优先），生成结构化诊断报告。
+                            </div>
+                        </div>
+                        <div class="flow-step" data-step="5">
+                            <div class="flow-step-header" onclick="toggleStep('diagnosticSteps', 5)">
+                                <div class="flow-step-num">5</div>
+                                <div class="flow-step-text">输出改进建议</div>
+                                <i class="fa-solid fa-chevron-down flow-step-arrow"></i>
+                            </div>
+                            <div class="flow-step-body">
+                                基于诊断结果生成个性化改进建议，检查前置知识缺失情况，按类别统计薄弱分布，给出优先学习顺序。
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Example Report -->
+                <div class="example-card">
+                    <div class="example-card-title">
+                        <i class="fa-solid fa-file-medical"></i>
+                        示例诊断报告
+                    </div>
+                    <div class="example-report">
+                        <div class="example-report-row">
+                            <span class="example-label">薄弱知识点</span>
+                            <div class="example-tags">
+                                <span class="knowledge-tag weak"><i class="fa-solid fa-circle-exclamation"></i> 一般过去时</span>
+                                <span class="knowledge-tag weak"><i class="fa-solid fa-circle-exclamation"></i> 现在完成时</span>
+                                <span class="knowledge-tag weak"><i class="fa-solid fa-circle-exclamation"></i> 被动语态</span>
+                            </div>
+                        </div>
+                        <div class="example-report-row">
+                            <span class="example-label">强项知识点</span>
+                            <div class="example-tags">
+                                <span class="knowledge-tag mastered"><i class="fa-solid fa-circle-check"></i> 字母与发音</span>
+                                <span class="knowledge-tag mastered"><i class="fa-solid fa-circle-check"></i> be动词用法</span>
+                                <span class="knowledge-tag mastered"><i class="fa-solid fa-circle-check"></i> 一般现在时</span>
+                            </div>
+                        </div>
+                        <div class="example-report-suggestions">
+                            <div class="suggestion-item">
+                                <div class="suggestion-header">
+                                    <span class="badge badge-red">高优先</span>
+                                    <span class="suggestion-message">先巩固"一般现在时"前置知识，再学习"现在完成时"</span>
+                                </div>
+                                <div class="suggestion-desc">根因分析：现在完成时错误中 80% 涉及一般现在时基础不牢</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== Planning Agent ==================== -->
+    <section class="agent-section agent-section-reverse" id="planning">
+        <div class="agent-section-inner">
+            <div class="agent-section-left page-enter">
+                <!-- Interactive Flow Demo -->
+                <div class="flow-demo">
+                    <div class="flow-demo-title">
+                        <i class="fa-solid fa-play-circle"></i>
+                        路径生成演示
+                    </div>
+                    <div class="path-demo" id="pathDemo">
+                        <div class="path-demo-graph">
+                            <div class="path-node" data-order="1" style="--delay: 0s;">
+                                <div class="path-node-dot blue"></div>
+                                <div class="path-node-name">字母与发音</div>
+                            </div>
+                            <div class="path-connector"></div>
+                            <div class="path-node" data-order="2" style="--delay: 0.3s;">
+                                <div class="path-node-dot blue"></div>
+                                <div class="path-node-name">be动词用法</div>
+                            </div>
+                            <div class="path-connector"></div>
+                            <div class="path-node" data-order="3" style="--delay: 0.6s;">
+                                <div class="path-node-dot purple"></div>
+                                <div class="path-node-name">一般现在时</div>
+                            </div>
+                            <div class="path-connector"></div>
+                            <div class="path-node milestone" data-order="4" style="--delay: 0.9s;">
+                                <div class="path-node-dot orange"><i class="fa-solid fa-flag-checkered" style="font-size:10px;"></i></div>
+                                <div class="path-node-name">里程碑</div>
+                            </div>
+                            <div class="path-connector"></div>
+                            <div class="path-node" data-order="5" style="--delay: 1.2s;">
+                                <div class="path-node-dot green"></div>
+                                <div class="path-node-name">一般过去时</div>
+                            </div>
+                            <div class="path-connector"></div>
+                            <div class="path-node" data-order="6" style="--delay: 1.5s;">
+                                <div class="path-node-dot green"></div>
+                                <div class="path-node-name">现在进行时</div>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary btn-sm" onclick="runPathAnimation()" id="pathAnimBtn">
+                            <i class="fa-solid fa-play"></i> 播放路径生成
+                        </button>
+                    </div>
+                </div>
+                <!-- Example Path -->
+                <div class="example-card">
+                    <div class="example-card-title">
+                        <i class="fa-solid fa-map"></i>
+                        示例学习路径（5天计划）
+                    </div>
+                    <div class="example-path">
+                        <div class="example-day">
+                            <div class="example-day-header">
+                                <span class="badge badge-blue">Day 1</span>
+                                <span class="example-day-est">约 45 分钟</span>
+                            </div>
+                            <div class="example-day-items">
+                                <div class="example-day-item">
+                                    <span class="badge badge-neutral">语法</span>
+                                    <span>字母与发音</span>
+                                </div>
+                                <div class="example-day-item">
+                                    <span class="badge badge-neutral">语法</span>
+                                    <span>be动词用法</span>
+                                </div>
+                                <div class="example-day-item">
+                                    <span class="badge badge-purple">词汇</span>
+                                    <span>基础名词词汇</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="example-day">
+                            <div class="example-day-header">
+                                <span class="badge badge-blue">Day 2</span>
+                                <span class="example-day-est">约 45 分钟</span>
+                            </div>
+                            <div class="example-day-items">
+                                <div class="example-day-item">
+                                    <span class="badge badge-neutral">语法</span>
+                                    <span>一般现在时</span>
+                                </div>
+                                <div class="example-day-item">
+                                    <span class="badge badge-purple">词汇</span>
+                                    <span>基础动词词汇</span>
+                                </div>
+                                <div class="example-day-item">
+                                    <span class="badge badge-green">阅读</span>
+                                    <span>基础句型阅读</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="example-day milestone-day">
+                            <div class="example-day-header">
+                                <span class="badge badge-yellow"><i class="fa-solid fa-flag-checkered"></i> Day 5 - 里程碑</span>
+                            </div>
+                            <div class="example-day-items">
+                                <div class="example-day-item">
+                                    <span class="badge badge-neutral">语法</span>
+                                    <span>一般过去时</span>
+                                </div>
+                                <div class="example-day-item">
+                                    <span class="badge badge-purple">词汇</span>
+                                    <span>形容词比较级</span>
+                                </div>
+                                <div class="example-day-item">
+                                    <span class="badge badge-green">阅读</span>
+                                    <span>短文理解练习</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="agent-section-right page-enter page-enter-delay-1">
+                <div class="agent-section-badge purple">
+                    <i class="fa-solid fa-route"></i>
+                </div>
+                <h2 class="agent-section-title">规划 Agent</h2>
+                <p class="agent-section-subtitle">因材施教，为每位学生量身定制学习路径</p>
+                <div class="agent-features">
+                    <div class="agent-feature-item">
+                        <div class="agent-feature-icon"><i class="fa-solid fa-diagram-project"></i></div>
+                        <div>
+                            <div class="agent-feature-name">知识图谱拓扑排序</div>
+                            <div class="agent-feature-desc">基于34个知识点、40+条依赖关系构建的知识图谱，通过拓扑排序确保前置知识始终优先学习</div>
+                        </div>
+                    </div>
+                    <div class="agent-feature-item">
+                        <div class="agent-feature-icon"><i class="fa-solid fa-scale-balanced"></i></div>
+                        <div>
+                            <div class="agent-feature-name">多目标路径优化</div>
+                            <div class="agent-feature-desc">两阶段策略：先补基础（Level 1-2），再提能力（Level 3-5），各阶段内按语法/词汇/阅读交替穿插</div>
+                        </div>
+                    </div>
+                    <div class="agent-feature-item">
+                        <div class="agent-feature-icon"><i class="fa-solid fa-calendar-days"></i></div>
+                        <div>
+                            <div class="agent-feature-name">科学每日计划</div>
+                            <div class="agent-feature-desc">每天3个知识点，每个预估15分钟，合理分配学习负担，避免认知过载</div>
+                        </div>
+                    </div>
+                    <div class="agent-feature-item">
+                        <div class="agent-feature-icon"><i class="fa-solid fa-flag-checkered"></i></div>
+                        <div>
+                            <div class="agent-feature-name">里程碑检查点</div>
+                            <div class="agent-feature-desc">每5个知识点设置一个里程碑，提供阶段性成就感，支持学习动力维持</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== Tutoring Agent ==================== -->
+    <section class="agent-section" id="tutoring">
+        <div class="agent-section-inner">
+            <div class="agent-section-left page-enter">
+                <div class="agent-section-badge green">
+                    <i class="fa-solid fa-chalkboard-user"></i>
+                </div>
+                <h2 class="agent-section-title">辅导 Agent</h2>
+                <p class="agent-section-subtitle">苏格拉底式启发教学，引导学生主动思考</p>
+                <div class="agent-features">
+                    <div class="agent-feature-item">
+                        <div class="agent-feature-icon"><i class="fa-solid fa-comments"></i></div>
+                        <div>
+                            <div class="agent-feature-name">多轮对话辅导</div>
+                            <div class="agent-feature-desc">基于大语言模型（LLM）实现自然语言对话，支持任意 OpenAI 兼容 API，保留最近3轮上下文确保对话连贯</div>
+                        </div>
+                    </div>
+                    <div class="agent-feature-item">
+                        <div class="agent-feature-icon"><i class="fa-solid fa-lightbulb"></i></div>
+                        <div>
+                            <div class="agent-feature-name">启发式教学</div>
+                            <div class="agent-feature-desc">不直接给出答案，而是通过引导性问题帮助学生自己发现规律、理解原理，培养独立思考能力</div>
+                        </div>
+                    </div>
+                    <div class="agent-feature-item">
+                        <div class="agent-feature-icon"><i class="fa-solid fa-book-open"></i></div>
+                        <div>
+                            <div class="agent-feature-name">独立知识点讲解</div>
+                            <div class="agent-feature-desc">支持随时查看知识点讲解，100字以内简洁说明，快速建立知识框架</div>
+                        </div>
+                    </div>
+                    <div class="agent-feature-item">
+                        <div class="agent-feature-icon"><i class="fa-solid fa-shield-halved"></i></div>
+                        <div>
+                            <div class="agent-feature-name">完善的错误处理</div>
+                            <div class="agent-feature-desc">支持超时控制、连接错误、401/429/404 等多种异常情况处理，确保系统稳定性</div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Teaching Principles -->
+                <div class="principles-grid">
+                    <div class="principle-card">
+                        <div class="principle-icon"><i class="fa-solid fa-lightbulb"></i></div>
+                        <div class="principle-name">不直接给答案</div>
+                        <div class="principle-desc">引导学生自己发现</div>
+                    </div>
+                    <div class="principle-card">
+                        <div class="principle-icon"><i class="fa-solid fa-stairs"></i></div>
+                        <div class="principle-name">循序渐进</div>
+                        <div class="principle-desc">从简单到复杂逐步引导</div>
+                    </div>
+                    <div class="principle-card">
+                        <div class="principle-icon"><i class="fa-solid fa-thumbs-up"></i></div>
+                        <div class="principle-name">鼓励为主</div>
+                        <div class="principle-desc">积极反馈增强信心</div>
+                    </div>
+                    <div class="principle-card">
+                        <div class="principle-icon"><i class="fa-solid fa-arrows-rotate"></i></div>
+                        <div class="principle-name">类比讲解</div>
+                        <div class="principle-desc">用熟悉事物解释新概念</div>
+                    </div>
+                    <div class="principle-card">
+                        <div class="principle-icon"><i class="fa-solid fa-bug"></i></div>
+                        <div class="principle-name">错误分析</div>
+                        <div class="principle-desc">帮助理解错误原因</div>
+                    </div>
+                </div>
+            </div>
+            <div class="agent-section-right page-enter page-enter-delay-1">
+                <!-- Chat Demo -->
+                <div class="flow-demo">
+                    <div class="flow-demo-title">
+                        <i class="fa-solid fa-play-circle"></i>
+                        辅导对话演示
+                    </div>
+                    <div class="chat-demo" id="chatDemo">
+                        <div class="chat-demo-messages" id="chatDemoMessages">
+                            <!-- Messages will be added by JS -->
+                        </div>
+                        <button class="btn btn-primary btn-sm" onclick="runChatAnimation()" id="chatAnimBtn" style="margin:12px auto; display:flex;">
+                            <i class="fa-solid fa-play"></i> 播放辅导对话
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== Assessment Agent ==================== -->
+    <section class="agent-section agent-section-reverse" id="assessment">
+        <div class="agent-section-inner">
+            <div class="agent-section-left page-enter">
+                <!-- Spaced Repetition Timeline -->
+                <div class="flow-demo">
+                    <div class="flow-demo-title">
+                        <i class="fa-solid fa-play-circle"></i>
+                        间隔重复算法演示
+                    </div>
+                    <div class="timeline-demo" id="timelineDemo">
+                        <div class="timeline-track">
+                            <div class="timeline-node critical" data-info="首次学习：掌握度 45%" onclick="showTimelineInfo(this)">
+                                <div class="timeline-dot"></div>
+                                <div class="timeline-label">学习日</div>
+                            </div>
+                            <div class="timeline-line"></div>
+                            <div class="timeline-node high" data-info="第1次复习：掌握度 62%" onclick="showTimelineInfo(this)">
+                                <div class="timeline-dot"></div>
+                                <div class="timeline-label">+1天</div>
+                            </div>
+                            <div class="timeline-line"></div>
+                            <div class="timeline-node medium" data-info="第2次复习：掌握度 78%" onclick="showTimelineInfo(this)">
+                                <div class="timeline-dot"></div>
+                                <div class="timeline-label">+3天</div>
+                            </div>
+                            <div class="timeline-line"></div>
+                            <div class="timeline-node low" data-info="第3次复习：掌握度 89%" onclick="showTimelineInfo(this)">
+                                <div class="timeline-dot"></div>
+                                <div class="timeline-label">+7天</div>
+                            </div>
+                            <div class="timeline-line"></div>
+                            <div class="timeline-node low" data-info="第4次复习：掌握度 95%" onclick="showTimelineInfo(this)">
+                                <div class="timeline-dot"></div>
+                                <div class="timeline-label">+14天</div>
+                            </div>
+                            <div class="timeline-line"></div>
+                            <div class="timeline-node mastered" data-info="第5次复习：掌握度 98%" onclick="showTimelineInfo(this)">
+                                <div class="timeline-dot"></div>
+                                <div class="timeline-label">+30天</div>
+                            </div>
+                        </div>
+                        <div class="timeline-info" id="timelineInfo">
+                            <i class="fa-solid fa-hand-pointer"></i>
+                            点击时间轴节点查看详情
+                        </div>
+                    </div>
+                </div>
+                <!-- Example Report -->
+                <div class="example-card">
+                    <div class="example-card-title">
+                        <i class="fa-solid fa-clipboard-check"></i>
+                        示例评估报告
+                    </div>
+                    <div class="example-assessment">
+                        <div class="example-assessment-overall">
+                            <div class="example-assessment-item">
+                                <span class="example-label">总体进度</span>
+                                <div class="progress-bar" style="width:200px;">
+                                    <div class="progress-fill blue" style="width: 62%;"></div>
+                                </div>
+                                <span class="example-value">18/34</span>
+                            </div>
+                        </div>
+                        <div class="example-assessment-categories">
+                            <div class="example-assessment-item">
+                                <span class="example-label">语法</span>
+                                <div class="progress-bar" style="width:200px;">
+                                    <div class="progress-fill purple" style="width: 75%;"></div>
+                                </div>
+                                <span class="example-value">75%</span>
+                            </div>
+                            <div class="example-assessment-item">
+                                <span class="example-label">词汇</span>
+                                <div class="progress-bar" style="width:200px;">
+                                    <div class="progress-fill green" style="width: 55%;"></div>
+                                </div>
+                                <span class="example-value">55%</span>
+                            </div>
+                            <div class="example-assessment-item">
+                                <span class="example-label">阅读</span>
+                                <div class="progress-bar" style="width:200px;">
+                                    <div class="progress-fill yellow" style="width: 40%;"></div>
+                                </div>
+                                <span class="example-value">40%</span>
+                            </div>
+                        </div>
+                        <div class="example-review-table">
+                            <div class="example-review-title">复习计划</div>
+                            <div class="data-table-wrapper">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>知识点</th>
+                                            <th>紧急度</th>
+                                            <th>下次复习</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="row-overdue">
+                                            <td class="td-bold">一般过去时</td>
+                                            <td><span class="badge badge-red">紧急</span></td>
+                                            <td class="td-muted">已逾期 2 天</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="td-bold">现在完成时</td>
+                                            <td><span class="badge badge-yellow">较高</span></td>
+                                            <td class="td-muted">明天</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="td-bold">被动语态</td>
+                                            <td><span class="badge badge-blue">中等</span></td>
+                                            <td class="td-muted">3 天后</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="agent-section-right page-enter page-enter-delay-1">
+                <div class="agent-section-badge orange">
+                    <i class="fa-solid fa-chart-line"></i>
+                </div>
+                <h2 class="agent-section-title">评估 Agent</h2>
+                <p class="agent-section-subtitle">科学追踪，让学习进度一目了然</p>
+                <div class="agent-features">
+                    <div class="agent-feature-item">
+                        <div class="agent-feature-icon"><i class="fa-solid fa-clock-rotate-left"></i></div>
+                        <div>
+                            <div class="agent-feature-name">SM-2 间隔重复算法</div>
+                            <div class="agent-feature-desc">基于 SM-2 变体算法计算最优复习时间，4级紧急度（紧急/较高/中等/低），确保知识长期留存</div>
+                        </div>
+                    </div>
+                    <div class="agent-feature-item">
+                        <div class="agent-feature-icon"><i class="fa-solid fa-chart-pie"></i></div>
+                        <div>
+                            <div class="agent-feature-name">分类掌握率统计</div>
+                            <div class="agent-feature-desc">按语法、词汇、阅读三大类别分别统计掌握率，帮助发现偏科问题，平衡学习投入</div>
+                        </div>
+                    </div>
+                    <div class="agent-feature-item">
+                        <div class="agent-feature-icon"><i class="fa-solid fa-fire"></i></div>
+                        <div>
+                            <div class="agent-feature-name">学习连续天数</div>
+                            <div class="agent-feature-desc">追踪每日学习打卡，连续学习天数可视化，利用习惯养成机制维持学习动力</div>
+                        </div>
+                    </div>
+                    <div class="agent-feature-item">
+                        <div class="agent-feature-icon"><i class="fa-solid fa-award"></i></div>
+                        <div>
+                            <div class="agent-feature-name">综合评价体系</div>
+                            <div class="agent-feature-desc">五级评价（优秀/良好/中等/需加强/起步阶段），综合进度、正确率、掌握度等多维度数据</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="landing-cta">
+        <h2 class="cta-title page-enter">开始你的智能学习之旅</h2>
+        <p class="cta-desc page-enter page-enter-delay-1">
+            四大Agent已准备就绪，即刻体验AI驱动的个性化学习。
+        </p>
+        <div class="hero-actions page-enter page-enter-delay-2">
+            <a href="/app" class="btn btn-primary btn-lg">
+                <i class="fa-solid fa-arrow-right"></i> 立即体验
+            </a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="landing-footer">
+        <p>Adaptive Learning Agent System &mdash; 多Agent协作自适应学习系统</p>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/agents.js') }}"></script>
+</body>
+</html>
