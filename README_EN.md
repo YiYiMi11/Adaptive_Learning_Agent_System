@@ -95,7 +95,7 @@ The system adopts a **multi-agent collaboration architecture** where four specia
 **Clone the repository**
 
 ```bash
-git clone https://github.com/your-username/adaptive-learning-agent-system.git
+git clone https://github.com/YiYiMi11/adaptive-learning-agent-system.git
 cd adaptive-learning-agent-system/adaptive_learning
 ```
 
